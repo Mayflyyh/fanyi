@@ -27,6 +27,7 @@
     "gradient-string": "^3.0.0",
     "groq-sdk": "^0.7.0",
     "node-fetch": "^3.3.2",
+    "openai": "^4.0.0",
     "ora": "^8.1.0",
     "update-notifier": "^7.3.1"
   },
@@ -38,7 +39,6 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
     "c8": "^10.1.2",
-    "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "np": "^10.0.7",
     "vitest": "^2.1.1"
@@ -49,8 +49,7 @@
     "lint": "biome check .",
     "format": "biome check . --write",
     "prepublishOnly": "np --no-cleanup --no-publish",
-    "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "lint-staged": "lint-staged"
   },
   "type": "module"
 }

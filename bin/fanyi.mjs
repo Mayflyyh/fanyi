@@ -6,6 +6,7 @@ import { Command } from 'commander';
 import updateNotifier from 'update-notifier';
 import config from '../lib/config.mjs';
 import { searchList } from '../lib/searchHistory.mjs';
+import OpenAI from 'openai';
 
 const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)));
 
@@ -43,7 +44,7 @@ program
       .argument('<value>', '配置项值')
       .action(async (key, value) => {
         const options = {};
-        if (key === 'GROQ_API_KEY') {
+        if (key === 'GROQ_API_KEY' || key === 'OPENAI_API_KEY' || key === 'OPENAI_API_URL') {
           options[key] = value;
         } else {
           options[key] = value === 'true' ? true : value === 'false' ? false : value;
@@ -72,6 +73,9 @@ program.on('--help', () => {
   console.log(`${chalk.cyan('  $ ')}fanyi config set groq true`);
   console.log(`${chalk.cyan('  $ ')}fanyi config set GROQ_API_KEY your_api_key_here`);
   console.log(`${chalk.cyan('  $ ')}fanyi config list`);
+  console.log(`${chalk.cyan('  $ ')}fanyi config set openai true`);
+  console.log(`${chalk.cyan('  $ ')}fanyi config set OPENAI_API_KEY your_api_key_here`);
+  console.log(`${chalk.cyan('  $ ')}fanyi config set OPENAI_API_URL https://api.openai.com/v1`);
   console.log('');
 });
 
@@ -85,5 +89,13 @@ async function runFY(options = {}) {
   const defaultOptions = await config.load();
   const mergedOptions = { ...defaultOptions, ...options };
   const fanyi = await import('../index.mjs');
+  
+  if (mergedOptions.openai && mergedOptions.OPENAI_API_KEY && mergedOptions.OPENAI_API_URL) {
+    const openai = new OpenAI({
+      apiKey: mergedOptions.OPENAI_API_KEY,
+      baseURL: mergedOptions.OPENAI_API_URL,
+    });
+    mergedOptions.openaiClient = openai;
+  }
   fanyi.default(program.args.join(' '), mergedOptions);
 }
